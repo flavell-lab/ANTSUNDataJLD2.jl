@@ -1,6 +1,6 @@
 name = "ANTSUNDataJLD2"
 uuid = "18b2d93e-2194-470d-a231-55641c046d35"
-authors = ["Jungsoo Kim <jungsu93@gmail.com>"]
+authors = ["Jungsoo Kim <jskneuro@gmail.com>"]
 version = "0.1.0"
 
 [deps]
