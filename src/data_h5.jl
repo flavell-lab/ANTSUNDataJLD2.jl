@@ -42,7 +42,6 @@ function export_jld2_h5(path_data_dict::String; path_h5::Union{String,Nothing}=n
     verbose && println("idx_splits: $idx_splits")
     
     # traces
-    trace_F20 = trace_array_rm_nan_neuron(data_dict["traces_array_F_F20"])[1]
     trace_zstd = trace_array_rm_nan_neuron(data_dict["raw_zscored_traces_array"])[1]
     trace, match_org_to_skip, match_skip_to_org = trace_array_rm_nan_neuron(data_dict["traces_array"])
     n_neuron, n_t = size(trace)
@@ -78,7 +77,8 @@ function export_jld2_h5(path_data_dict::String; path_h5::Union{String,Nothing}=n
     h5open(path_h5, "w") do h5f
         # traces
         g1 = create_group(h5f, "gcamp")
-        g1["traces_array_F_F20"] = trace_F20
+        g1["traces_array_F_F20"] = normalize_traces(trace, fn=x->percentile(x,20))
+        g1["traces_array_F_Fmean"] = normalize_traces(trace, fn=mean)
         g1["trace_array"] = trace_zstd
         g1["trace_array_original"] = trace
 
