@@ -1,7 +1,7 @@
 name = "ANTSUNDataJLD2"
 uuid = "18b2d93e-2194-470d-a231-55641c046d35"
 authors = ["Jungsoo Kim <jskneuro@gmail.com>"]
-version = "0.1.0"
+version = "0.1.1"
 
 [deps]
 FlavellBase = "88015601-1e04-46e4-b006-ffd03bd63f42"
