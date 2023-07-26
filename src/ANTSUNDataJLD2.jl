@@ -1,6 +1,6 @@
 module ANTSUNDataJLD2
-using ANTSUNData, FlavellConstants, FlavellBase, HDF5, JLD2, BehaviorDataNIR,
-    StatsBase, ProgressMeter, CaAnalysis, Statistics, Impute, PyPlot
+using ANTSUNData, FlavellConstants, FlavellBase, HDF5, JLD2, CaAnalysis, BehaviorDataNIR,
+    StatsBase, ProgressMeter, Statistics, Impute, PyPlot
 
 zstd = FlavellBase.standardize
 
