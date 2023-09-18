@@ -100,8 +100,14 @@ function export_jld2_h5(path_data_dict::String; path_h5::Union{String,Nothing}=n
             Array(hcat(list_match...)')
         end
 
-        
+        for (k,v) = match_org_to_skip
+            if k != v
+                @warn("NaN neurons removed")
+                break
+            end
+        end
 
+        
         # behavior
         g2 = create_group(h5f, "behavior")
         g2["velocity"] = velocity_filter ? velocity_filt : velocity
@@ -144,8 +150,15 @@ function export_jld2_h5(path_data_dict::String; path_h5::Union{String,Nothing}=n
         activity_trace = data_dict["activity_traces"]
         marker_trace = data_dict["marker_traces"]
 
-        g5["valid_activity_traces"] = [data_dict["activity_traces"][valid_rois[i]] for i=1:length(valid_rois)]
-        g5["valid_marker_traces"] = [data_dict["marker_traces"][valid_rois[i]] for i=1:length(valid_rois)]
+        valid_activity_traces = zeros(length(valid_rois))
+        valid_marker_traces = zeros(length(valid_rois))
+        for i=1:length(valid_rois)
+            valid_activity_traces[i] = data_dict["activity_traces"][valid_rois[i]]
+            valid_marker_traces[i] = data_dict["marker_traces"][valid_rois[i]]
+        end
+
+        g5["valid_activity_traces"] = valid_activity_traces
+        g5["valid_marker_traces"] = valid_marker_traces
     end
     
     verbose && println("writing to HDF5 complete")
