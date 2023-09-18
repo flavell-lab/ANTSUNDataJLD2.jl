@@ -115,7 +115,7 @@ function export_jld2_h5(path_data_dict::String; path_h5::Union{String,Nothing}=n
         g2["reversal_events"] = reversal_events
 
         list_key = ["head_angle", "angular_velocity", "pumping", "worm_curvature", "worm_angle",
-            "body_angle_absolute", "body_angle_all", "body_angle", "x_stage_confocal", "y_stage_confocal"]
+            "body_angle_absolute", "body_angle_all", "body_angle", "zeroed_x_confocal", "zeroed_y_confocal"]
         for k = list_key
             try
                 d = data_dict[k]
