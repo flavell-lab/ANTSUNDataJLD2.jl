@@ -159,7 +159,7 @@ function export_jld2_h5(path_data_dict::String; path_h5::Union{String,Nothing}=n
                 valid_activity_traces[i,j] = data_dict["activity_traces"][valid_rois[i]][j]
             end
             for j = keys(data_dict["marker_traces"][valid_rois[i]])
-                valid_marker_traces[i] = data_dict["marker_traces"][valid_rois[i]][j]
+                valid_marker_traces[i,j] = data_dict["marker_traces"][valid_rois[i]][j]
             end
         end
 
