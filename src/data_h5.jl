@@ -150,15 +150,21 @@ function export_jld2_h5(path_data_dict::String; path_h5::Union{String,Nothing}=n
         activity_trace = data_dict["activity_traces"]
         marker_trace = data_dict["marker_traces"]
 
-        valid_activity_traces = zeros(length(valid_rois))
-        valid_marker_traces = zeros(length(valid_rois))
+        max_t = size(trace_zstd, 2)
+
+        valid_activity_traces = fill(NaN, (length(valid_rois), max_t))
+        valid_marker_traces = fill(NaN, (length(valid_rois), max_t))
         for i=1:length(valid_rois)
-            valid_activity_traces[i] = data_dict["activity_traces"][valid_rois[i]]
-            valid_marker_traces[i] = data_dict["marker_traces"][valid_rois[i]]
+            for j = keys(data_dict["activity_traces"][valid_rois[i]])
+                valid_activity_traces[i,j] = data_dict["activity_traces"][valid_rois[i]][j]
+            end
+            for j = keys(data_dict["marker_traces"][valid_rois[i]])
+                valid_marker_traces[i] = data_dict["marker_traces"][valid_rois[i]][j]
+            end
         end
 
-        g5["valid_activity_traces"] = valid_activity_traces
-        g5["valid_marker_traces"] = valid_marker_traces
+        g5["raw_activity_traces"] = valid_activity_traces
+        g5["raw_marker_traces"] = valid_marker_traces
     end
     
     verbose && println("writing to HDF5 complete")
