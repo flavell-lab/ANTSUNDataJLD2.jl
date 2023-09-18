@@ -100,6 +100,8 @@ function export_jld2_h5(path_data_dict::String; path_h5::Union{String,Nothing}=n
             Array(hcat(list_match...)')
         end
 
+        
+
         # behavior
         g2 = create_group(h5f, "behavior")
         g2["velocity"] = velocity_filter ? velocity_filt : velocity
@@ -107,7 +109,7 @@ function export_jld2_h5(path_data_dict::String; path_h5::Union{String,Nothing}=n
         g2["reversal_events"] = reversal_events
 
         list_key = ["head_angle", "angular_velocity", "pumping", "worm_curvature",
-            "body_angle_absolute", "body_angle_all", "body_angle"]
+            "body_angle_absolute", "body_angle_all", "body_angle", "x_stage_confocal", "y_stage_confocal"]
         for k = list_key
             try
                 d = data_dict[k]
@@ -136,6 +138,14 @@ function export_jld2_h5(path_data_dict::String; path_h5::Union{String,Nothing}=n
             g4["roi_match_confidence"] = data_dict_match["roi_match_confidence"]
             g4["roi_match"] = data_dict_match["roi_matches"]
         end
+
+        g5 = create_group(h5f, "gcamp_raw")
+        valid_rois = data_dict["valid_rois"]
+        activity_trace = data_dict["activity_traces"]
+        marker_trace = data_dict["marker_traces"]
+
+        g5["valid_activity_traces"] = [data_dict["activity_traces"][valid_rois[i]] for i=1:length(valid_rois)]
+        g5["valid_marker_traces"] = [data_dict["marker_traces"][valid_rois[i]] for i=1:length(valid_rois)]
     end
     
     verbose && println("writing to HDF5 complete")
