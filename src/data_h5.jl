@@ -100,14 +100,22 @@ function export_jld2_h5(path_data_dict::String; path_h5::Union{String,Nothing}=n
             Array(hcat(list_match...)')
         end
 
+        for (k,v) = match_org_to_skip
+            if k != v
+                @warn("NaN neurons removed")
+                break
+            end
+        end
+
+        
         # behavior
         g2 = create_group(h5f, "behavior")
         g2["velocity"] = velocity_filter ? velocity_filt : velocity
         g2["reversal_vec"] = reversal_vec
         g2["reversal_events"] = reversal_events
 
-        list_key = ["head_angle", "angular_velocity", "pumping", "worm_curvature",
-            "body_angle_absolute", "body_angle_all", "body_angle"]
+        list_key = ["head_angle", "angular_velocity", "pumping", "worm_curvature", "worm_angle",
+            "body_angle_absolute", "body_angle_all", "body_angle", "zeroed_x_confocal", "zeroed_y_confocal"]
         for k = list_key
             try
                 d = data_dict[k]
@@ -136,6 +144,40 @@ function export_jld2_h5(path_data_dict::String; path_h5::Union{String,Nothing}=n
             g4["roi_match_confidence"] = data_dict_match["roi_match_confidence"]
             g4["roi_match"] = data_dict_match["roi_matches"]
         end
+
+        g5 = create_group(h5f, "gcamp_raw")
+        valid_rois = data_dict["valid_rois"]
+        activity_trace = data_dict["activity_traces"]
+        marker_trace = data_dict["marker_traces"]
+
+        max_t = size(trace_zstd, 2)
+
+        valid_activity_traces = fill(NaN, (length(valid_rois), max_t))
+        valid_marker_traces = fill(NaN, (length(valid_rois), max_t))
+
+        activity_bkg = fill(NaN, max_t)
+        marker_bkg = fill(NaN, max_t)
+        for i=1:length(valid_rois)
+            for j = keys(data_dict["activity_traces"][valid_rois[i]])
+                valid_activity_traces[i,j] = data_dict["activity_traces"][valid_rois[i]][j]
+            end
+            for j = keys(data_dict["marker_traces"][valid_rois[i]])
+                valid_marker_traces[i,j] = data_dict["marker_traces"][valid_rois[i]][j]
+            end
+        end
+
+        for i = keys(data_dict["activity_bkg"])
+            activity_bkg[i] = data_dict["activity_bkg"][i]
+        end
+                
+        for i = keys(data_dict["marker_bkg"])
+            marker_bkg[i] = data_dict["marker_bkg"][i]
+        end
+
+        g5["raw_activity_traces"] = valid_activity_traces
+        g5["raw_marker_traces"] = valid_marker_traces
+        g5["activity_bkg"] = activity_bkg
+        g5["marker_bkg"] = marker_bkg
     end
     
     verbose && println("writing to HDF5 complete")
